@@ -1,0 +1,145 @@
+from zipfile import ZipFile
+import os
+
+# Crear archivos HTML, CSS y JS
+base_path = "/mnt/data/tienda_web_demo"
+os.makedirs(base_path, exist_ok=True)
+
+files = {
+    "index.html": """
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Tienda Online</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Tienda Online</h1>
+    <nav>
+      <a href="admin.html">🔐 Acceso Administrador</a>
+      <a href="#" onclick="verCarrito()">🛒 Ver Carrito</a>
+    </nav>
+  </header>
+
+  <main id="productos">
+    <div class="producto">
+      <h2>Producto 1</h2>
+      <p>$1000</p>
+      <button onclick="agregarAlCarrito('Producto 1', 1000)">Agregar al carrito</button>
+    </div>
+    <div class="producto">
+      <h2>Producto 2</h2>
+      <p>$1500</p>
+      <button onclick="agregarAlCarrito('Producto 2', 1500)">Agregar al carrito</button>
+    </div>
+  </main>
+
+  <div id="carrito" style="display:none;"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+""",
+    "admin.html": """
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Administrador - Tienda</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Panel del Administrador</h1>
+    <nav>
+      <a href="index.html">🏠 Volver a la tienda</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Gestión de productos (demo)</h2>
+    <p>Acá iría la edición de productos. Por ahora es un ejemplo visual.</p>
+  </main>
+</body>
+</html>
+""",
+    "style.css": """
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+}
+
+header {
+  background-color: #333;
+  color: white;
+  padding: 1rem;
+}
+
+nav a {
+  color: white;
+  margin-right: 20px;
+  text-decoration: none;
+}
+
+main {
+  padding: 2rem;
+}
+
+.producto {
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+#carrito {
+  background-color: white;
+  border-top: 2px solid #000;
+  padding: 1rem;
+}
+""",
+    "script.js": """
+let carrito = [];
+
+function agregarAlCarrito(nombre, precio) {
+  carrito.push({ nombre, precio });
+  alert(`${nombre} fue agregado al carrito.`);
+}
+
+function verCarrito() {
+  const div = document.getElementById('carrito');
+  div.style.display = 'block';
+  div.innerHTML = '<h2>Carrito de Compras</h2>';
+
+  if (carrito.length === 0) {
+    div.innerHTML += '<p>El carrito está vacío.</p>';
+    return;
+  }
+
+  let total = 0;
+  carrito.forEach(item => {
+    div.innerHTML += `<p>${item.nombre} - $${item.precio}</p>`;
+    total += item.precio;
+  });
+
+  div.innerHTML += `<h3>Total: $${total}</h3>`;
+}
+"""
+}
+
+# Crear los archivos
+for filename, content in files.items():
+    with open(os.path.join(base_path, filename), "w", encoding="utf-8") as f:
+        f.write(content.strip())
+
+# Crear archivo ZIP
+zip_path = "/mnt/data/tienda_web_demo.zip"
+with ZipFile(zip_path, 'w') as zipf:
+    for filename in files:
+        zipf.write(os.path.join(base_path, filename), arcname=filename)
+
+zip_path
